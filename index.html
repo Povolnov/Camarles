@@ -1,0 +1,273 @@
+<!doctype html><html lang="ca"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0f3d3e"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon-180.png"><style>*{box-sizing:border-box}:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}[hidden]{display:none!important}</style></head><body><title>Bus i tren Camarles</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Golos+Text:wght@400;500;600;800&display=swap">
+<style>
+/* Layout: one phone column; a departure board on top, the next trains and buses below it */
+:root{--bg:#e9efec;--strong:#000;--surface:#fff;--fg:#14282a;--muted:#55686a;--line:#cbd7d3;--board:#0f3d3e;--board-fg:#f3f7f4;--board-muted:#a9c4bf;--amber:#ffc247;--accent:#0b6b62;--warn:#8f4a00;--warn-bg:#fdf0dc;
+--display:"Oswald","Arial Narrow",Impact,sans-serif;--body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1718;--strong:#fff;--surface:#172426;--fg:#e8f0ee;--muted:#9db0ad;--line:#2b3c3e;--board:#123f40;--accent:#5fd0c2;--warn:#ffc98a;--warn-bg:#35270f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1718;--strong:#fff;--surface:#172426;--fg:#e8f0ee;--muted:#9db0ad;--line:#2b3c3e;--board:#123f40;--accent:#5fd0c2;--warn:#ffc98a;--warn-bg:#35270f;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:400 1rem/1.45 var(--body);padding-block:16px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:30rem;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+button,a.btn{font:inherit;cursor:pointer;border-radius:10px;min-height:48px;display:flex;align-items:center;justify-content:center;text-decoration:none;padding:8px 14px;text-align:center}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.route{display:flex;align-items:center;gap:8px}
+.route h1{flex:1;min-width:0;text-align:center;margin:0;font:600 clamp(1.2rem,5.5vw,1.4rem)/1.15 var(--display);letter-spacing:.01em;text-wrap:balance}
+.logo{height:42px;width:130px;margin:0 0 10px;background:var(--fg);-webkit-mask:url(logo.png) no-repeat left center/contain;mask:url(logo.png) no-repeat left center/contain}
+.gift{margin:6px 0 0;font-weight:500;text-wrap:balance}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:.9rem}
+.ver{flex:none;white-space:nowrap;font-size:clamp(.72rem,3.5vw,.9rem)}
+.upd{flex:1;min-width:0;text-align:center}
+.install{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.install p{margin:0;font-size:.95rem}
+.inst-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.inst-x{min-height:36px;width:36px;padding:0;background:none;border:0;color:var(--muted);font-size:1.4rem;line-height:1}
+.info-btn{width:44px;min-height:44px;padding:0;flex:none;border-radius:50%;background:var(--surface);color:var(--accent);border:1px solid var(--line);font:600 1.15rem/1 Georgia,serif}
+.copy{white-space:nowrap;font-size:clamp(.68rem,3.5vw,.95rem)}
+.info{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:.95rem}
+.info h2{margin:12px 0 4px}.info h2:first-child{margin-top:0}.info p{margin:0 0 8px}.info a{color:var(--accent)}
+.swap{flex:none;white-space:nowrap;padding:8px;font-size:.9rem;background:var(--surface);color:var(--fg);border:1px solid var(--line);font-weight:500}
+.board{background:var(--board);color:var(--board-fg);border-radius:14px;padding:16px 18px 18px;display:flex;flex-direction:column;gap:4px}
+.lab{font-size:.78rem;letter-spacing:.07em;text-transform:uppercase;color:var(--board-muted)}
+.toprow{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.temp{flex:none;font:500 1.15rem/1.1 var(--display);font-variant-numeric:tabular-nums;white-space:nowrap}
+.timerow{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.time{font:600 clamp(3.8rem,20vw,6rem)/1 var(--display);color:var(--amber);font-variant-numeric:tabular-nums}
+.meta{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-bottom:0;font-size:.92rem;min-width:0;text-align:right}
+.chip{font:600 1.6rem/1.05 var(--display);border:2px solid var(--board-muted);border-radius:8px;padding:6px 10px;text-align:center}
+.go{font:500 1.5rem/1.2 var(--display);margin-top:6px}
+.detail{color:var(--board-muted);font-size:.95rem}
+.run{color:var(--amber);font-size:.92rem;margin-top:4px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.primary{background:var(--accent);color:var(--bg);border:0;font-weight:600}
+.btn.ghost{background:var(--surface);color:var(--fg);border:1px solid var(--line);font-weight:500}
+.note{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:.92rem}
+.places{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.places button{background:var(--surface);color:var(--fg);border:1px solid var(--line);font-weight:500}
+h2{margin:6px 0 0;font:500 1.1rem/1.2 var(--display);letter-spacing:.02em}
+ul{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+li{display:grid;grid-template-columns:3.4rem minmax(0,1fr) auto;gap:6px;align-items:baseline;padding:10px 14px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+li:first-child{border-top:0}
+ul{overflow:hidden}
+li.cur,li.cur .r{color:var(--strong)}
+li.cur .stop,li.cur .ln,li.cur .r{font-weight:800}
+li.cur b{font-weight:700}
+li:not(.cur){opacity:.72}
+li .stop{font-weight:500;min-width:0}
+li .ln{white-space:nowrap;text-align:right}
+li .r{grid-column:2/-1;text-align:left}
+li .st{grid-column:2/-1;color:var(--muted);font-size:.84rem}
+li b{font:500 1.25rem/1 var(--display)}
+li span{min-width:0}
+li .r{text-align:right;color:var(--muted);font-size:.9rem}
+.status{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;color:var(--muted);font-size:.9rem}
+.status label{display:flex;gap:6px;align-items:center}
+select{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px}
+.link{background:none;border:0;color:var(--accent);min-height:36px;padding:4px 0;text-decoration:underline}
+</style>
+<main>
+  <div class="logo" role="img" aria-label="Camarles"></div>
+  <div class="route"><h1 id="route"></h1><button class="swap" id="swap" type="button">⇄ Canvia</button></div>
+  <section class="board" aria-live="polite">
+    <div class="toprow"><div class="lab" id="heroLab"></div><div class="temp" id="temp" hidden></div></div>
+    <div class="timerow"><div class="time" id="time"></div><div class="meta"><span class="chip" id="line"></span><span id="arr"></span></div></div>
+    <div class="go" id="go"></div>
+    <div class="detail" id="detail"></div>
+    <div class="run" id="run" hidden></div>
+  </section>
+  <div class="note" id="note" hidden></div>
+  <div class="places" id="places" hidden><button type="button" data-p="home">Sóc a Camarles</button><button type="button" data-p="Tortosa">Sóc a Tortosa</button><button type="button" data-p="Barcelona-Sants">Sóc a Barcelona</button><button type="button" data-p="Tarragona">Sóc a Tarragona</button></div>
+  <div class="actions"><button class="primary" id="locate" type="button">On sóc / Actualitza</button><a class="btn ghost" id="maps" target="_blank" rel="noopener">Ruta a Google Maps</a></div>
+  <a class="btn ghost" id="rail" href="https://rodalies.gencat.cat/ca/inici/" target="_blank" rel="noopener" hidden>Comprova el retard del tren a Rodalies</a>
+  <div class="install" id="install" hidden>
+    <div class="inst-row"><strong>Tingues-la sempre a mà</strong><button class="inst-x" id="instX" type="button" aria-label="Tanca">×</button></div>
+    <p id="instT"></p>
+    <button class="primary" id="instB" type="button" hidden>Instal·la l'app</button>
+  </div>
+  <h2>Pròxims trens i autobusos</h2>
+  <ul id="list"></ul>
+  <div class="status"><span id="dayt"></span>
+    <label for="margin">Marge<select id="margin"><option value="0">0 min</option><option value="2">2 min</option><option value="5">5 min</option><option value="10">10 min</option></select></label></div>
+  <p class="gift"><strong>L'app de Camarles per anar a Tortosa i a Barcelona.</strong><br>Aquesta aplicació és un regal per als veïns de Camarles, de part de veïns de Camarles.</p>
+  <div class="foot"><span class="ver">v. 1.0</span><span class="ver upd" id="updated"></span><button class="info-btn" id="infoBtn" type="button" aria-expanded="false" aria-controls="info" aria-label="Informació">i</button></div>
+  <section class="info" id="info" hidden>
+    <h2>Com funciona</h2>
+    <p>En obrir-la, troba on ets i busca l'estació o la parada més propera de tot el recorregut, de Barcelona i Tarragona fins a Tortosa. Si ets a Camarles, et mostra els trens i autobusos cap a Tortosa o cap a Barcelona i el Perelló. Si ets fora, et diu com tornar a Camarles. Calcula el temps a peu i et diu quin pots agafar i quan has de sortir.</p>
+    <h2>Horaris</h2>
+    <p><span id="trainInfo">Trens: Renfe.</span> S'actualitzen sols cada nit.</p>
+    <p>Autobusos: Plana, línia 80, només de dilluns a divendres feiners, amb horari escolar i no escolar. Horari publicat a empresaplana.cat (fitxer del 2024). L'actualitzarem quan en surti un de nou.</p>
+    <p>La app s'actualitza sola en obrir-la amb connexió. Si continues veient l'horari antic, torna-la a instal·lar.</p>
+    <h2>Preguntes, idees i crítiques</h2>
+    <p>WhatsApp: <a href="https://wa.me/34633816232" target="_blank" rel="noopener">633 816 232</a><br>Correu: <a href="mailto:andres@idaa.uk">andres@idaa.uk</a></p>
+    <h2>Avís</h2>
+    <p>Aplicació no oficial, sense vincle amb Renfe, Rodalies, Plana ni l'Ajuntament de Camarles. Comprova els horaris abans de viatjar.</p>
+    <h2>Privacitat</h2>
+    <p>No guardem cap dada teva. La teva ubicació es fa servir al telèfon i s'envia a OpenStreetMap només per calcular el temps a peu.</p>
+    <p>La temperatura es consulta a Open-Meteo amb les coordenades del municipi, no amb les teves.</p>
+    <h2>Crèdits</h2>
+    <p>Horaris de tren: <a href="https://data.renfe.com/" target="_blank" rel="noopener">Renfe Data</a>, CC BY 4.0.<br>Temperatura: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>, CC BY 4.0.</p>
+    <p class="copy">© International Digital Asset Association (IDAA)</p>
+  </section>
+</main>
+<script>
+// Bus Plana línia 80 (empresaplana.cat, fitxer 2024). Columns follow ORDER; null = no stop.
+const BUS_PLACES={
+ "L'Ametlla de Mar":{s:"L'Ametlla de Mar",town:"L'Ametlla de Mar",lat:40.885805,lng:0.800581},
+ "El Perelló":{s:"El Perelló",town:"El Perelló",lat:40.87289,lng:0.712735},
+ "L'Ampolla":{s:"L'Ampolla",town:"L'Ampolla",lat:40.812432,lng:0.710913},
+ "Barri del Roquer":{s:"Barri del Roquer",town:"L'Ampolla",lat:40.786969,lng:0.682712},
+ "Camarles":{s:"Parada de Camarles",town:"Camarles",lat:40.772257,lng:0.670041,home:1},
+ "L'Aldea":{s:"L'Aldea",town:"L'Aldea",lat:40.7499247,lng:0.6161478},
+ "Mercat de Tortosa":{s:"Mercat de Tortosa",town:"Tortosa",lat:40.81098,lng:0.520233},
+ "Tortosa, estació d'autobusos":{s:"Tortosa, estació d'autobusos",town:"Tortosa",lat:40.8056638,lng:0.5217989}};
+const ORDER_S=["L'Ametlla de Mar","El Perelló","L'Ampolla","Barri del Roquer","Camarles","L'Aldea","Mercat de Tortosa","Tortosa, estació d'autobusos"];
+const ORDER_N=["Mercat de Tortosa","Tortosa, estació d'autobusos","L'Aldea","Camarles","Barri del Roquer","L'Ampolla","El Perelló","L'Ametlla de Mar"];
+const BUS={esc:{s:[["6:10","6:40","6:55",null,"7:05","7:20","7:45","8:05"],["8:30","8:45","9:00",null,"9:10","9:20","9:40","10:00"],["10:00","10:15","10:30","10:40","10:45","11:05",null,"11:25"],["12:30","12:45","13:00",null,"13:10","13:20","13:40","14:00"],["17:30","17:45","18:00",null,"18:10","18:20","18:40","18:55"]],
+ n:[[null,"10:30","10:50","11:10","11:15","11:25","11:40","11:55"],[null,"11:30","11:50","12:10","12:15","12:25","12:40","12:55"],["15:40","15:45","16:05","16:25","16:30","16:40","16:55","17:10"],["18:40","18:55","19:20","19:30",null,"19:40","19:55","20:10"]]},
+ noesc:{s:[["6:10","6:25","6:40","6:50","6:55","7:15",null,"7:40"],["8:10","8:25","8:40","8:50","8:55","9:05",null,"9:25"],["10:00","10:15","10:30","10:40","10:45","11:05",null,"11:25"],["11:30","11:45","12:00","12:10","12:15","12:25",null,"12:45"],["14:25","14:40","14:55","15:05","15:10","15:30",null,"15:50"],["17:00","17:15","17:30","17:40","17:45","17:55",null,"18:15"],["18:15","18:30","18:45","18:55","19:00","19:20",null,"19:40"]],
+ n:[[null,"8:30","8:50","9:10","9:15","9:25","9:40","9:55"],[null,"10:00","10:20","10:30","10:35","10:45","11:00","11:15"],[null,"11:45","12:05","12:15","12:20","12:30","12:45","13:00"],[null,"13:05","13:25","13:45","13:50","14:00","14:15","14:30"],[null,"16:05","16:25","16:45","16:50","17:00","17:15","17:30"],[null,"18:45","19:05","19:25","19:30","19:40","19:55","20:10"],[null,"20:10","20:30","20:50","20:55","21:05","21:20","21:35"]]}};
+// Calendari escolar de Catalunya (Departament d'Educació): curs 2026-27 i 2027-28.
+const SCHOOL=[["2026-09-08","2027-06-21",[["2026-12-22","2027-01-07"],["2027-03-20","2027-03-29"]]],["2027-09-08","2028-06-22",[["2027-12-22","2028-01-09"],["2028-04-08","2028-04-17"]]]];
+const SCHOOL_END="2028-06-22";
+// Trains: replaced at load by trains.json (Renfe Data, updated every night).
+let TRAIN={updated:"",base:"",days:0,stations:{},trains:[]};
+const SHORT={"Barcelona-Sants":"Sants","Barcelona Estació de França":"Estació de França","Barcelona-Passeig de Gràcia":"Pg. de Gràcia","L'Aldea-Amposta-Tortosa":"L'Aldea","L'Ampolla-El Perelló-Deltebre":"L'Ampolla","Camarles-Deltebre":"Estació de Camarles","Ulldecona-Alcanar-La Sénia":"Ulldecona","Sant Vicenç de Calders":"St. Vicenç de Calders","L'Hospitalet de l'Infant":"L'Hospitalet"};
+const TOWN={"Barcelona-Sants":"Barcelona","Barcelona Estació de França":"Barcelona","Barcelona-Passeig de Gràcia":"Barcelona","L'Aldea-Amposta-Tortosa":"L'Aldea","L'Ampolla-El Perelló-Deltebre":"L'Ampolla","Camarles-Deltebre":"Camarles","Ulldecona-Alcanar-La Sénia":"Ulldecona","Altafulla-Tamarit":"Altafulla"};
+const CAM_ST="Camarles-Deltebre",FAR_M=3500,HOME_M=4000;
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const S={dir:store.get("dir")==="n"?"n":"s",pos:null,loc:"idle",manual:null,walk:{},margin:+(store.get("margin")??2)};
+let ALERTS=[];
+
+function madrid(){const p={};new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Madrid",year:"numeric",month:"numeric",day:"numeric",hour:"numeric",minute:"numeric",hourCycle:"h23"}).formatToParts(new Date()).forEach(x=>p[x.type]=+x.value);return p}
+function easter(y){const a=y%19,b=y>>>0,c=Math.floor(b/100),e=b%100,d=Math.floor(c/4),f=c%4,g=Math.floor((c+8)/25),h=Math.floor((c-g+1)/3),i=(19*a+c-d-h+15)%30,k=Math.floor(e/4),l=e%4,m=(32+2*f+2*k-i-l)%7,n=Math.floor((a+11*i+22*m)/451),mo=Math.floor((i+2*m-7*n+114)/31),da=((i+2*m-7*n+114)%31)+1;return Date.UTC(y,mo-1,da)}
+const iso=d=>d.toISOString().slice(0,10);
+const md=d=>iso(d).slice(5);
+function isHoliday(d){const t=d.getTime(),e=easter(d.getUTCFullYear()),DAY=864e5;
+  if(t===e-2*DAY||t===e+DAY)return true;
+  return ["01-01","01-06","05-01","06-24","08-15","09-11","10-12","11-01","12-06","12-08","12-25","12-26"].includes(md(d))}
+function busDay(d){const w=d.getUTCDay();if(w===0||w===6||isHoliday(d))return null;
+  const k=iso(d);for(const[a,b,off]of SCHOOL){if(k>=a&&k<=b&&!off.some(([x,y])=>k>=x&&k<=y))return"esc"}return"noesc"}
+const toMin=s=>{const[a,b]=s.split(":");return +a*60+ +b};
+const fmt=m=>{m=((m%1440)+1440)%1440;return Math.floor(m/60)+":"+String(m%60).padStart(2,"0")};
+const dur=m=>m<60?m+" min":Math.floor(m/60)+" h"+(m%60?" "+(m%60)+" min":"");
+function dist(a,b){const R=6371e3,r=Math.PI/180,x=(b.lat-a.lat)*r,y=(b.lng-a.lng)*r,h=Math.sin(x/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+
+// All boarding places: train stations and bus stops.
+function places(){const out=[];
+  for(const[k,[lat,lng]]of Object.entries(TRAIN.stations))out.push({k:"t:"+k,name:k,s:SHORT[k]||k,town:TOWN[k]||k,lat,lng,mode:"train",home:k===CAM_ST});
+  for(const[k,p]of Object.entries(BUS_PLACES))out.push({k:"b:"+k,name:k,mode:"bus",...p,home:!!p.home});
+  return out}
+const homePlaces=()=>places().filter(p=>p.home);
+function origin(){
+  if(S.manual){const all=places();if(S.manual==="home")return{home:true,pl:homePlaces()};
+    const p=all.find(x=>x.name===S.manual);return{home:false,pl:p?[p]:[],near:p}}
+  if(!S.pos)return{home:true,pl:homePlaces()};
+  const all=places().map(p=>({...p,d:dist(S.pos,p)})).sort((a,b)=>a.d-b.d);
+  if(all.filter(p=>p.home).some(p=>p.d<=HOME_M))return{home:true,pl:homePlaces()};
+  const near=all[0];if(near.d>30000)return{home:true,pl:homePlaces(),away:true};
+  const pl=all.filter(p=>p.d<=FAR_M&&!p.home);return{home:false,pl:pl.length?pl:all.filter(p=>p.town===near.town),near,far:near.d>FAR_M}}
+
+// Services running on a day (offset `add` days from today), as stop sequences in minutes.
+function services(today,add){const d=new Date(today.getTime()+add*864e5),out=[],base=add*1440;
+  const tag=add===0?"":add===1?"demà":new Intl.DateTimeFormat("ca",{weekday:"long",timeZone:"UTC"}).format(d);
+  if(TRAIN.base){const[y,m,dd]=TRAIN.base.split("-").map(Number),i=Math.round((d.getTime()-Date.UTC(y,m-1,dd))/864e5);
+    if(i>=0)for(const t of TRAIN.trains)if(t.m[i]==="1")out.push({mode:"train",line:"R16 "+t.n,tag,seq:t.s.map(([st,h])=>({k:"t:"+st,name:st,t:toMin(h)+base}))})}
+  const p=busDay(d);
+  if(p)for(const[dir,order]of[["s",ORDER_S],["n",ORDER_N]])for(const col of BUS[p][dir])out.push({mode:"bus",line:"Bus 80",tag,seq:col.map((h,i)=>h&&{k:"b:"+order[i],name:order[i],t:toMin(h)+base}).filter(Boolean)});
+  return out}
+// Where a trip ends for the reader: Camarles when coming home, else the main stop in the chosen direction.
+function target(sv,from,o){const rest=sv.seq.slice(from+1);
+  if(!o.home)return rest.find(x=>x.k==="t:"+CAM_ST||x.k==="b:Camarles");
+  const south=rest.some(x=>["t:L'Aldea-Amposta-Tortosa","t:Tortosa","b:L'Aldea","b:Tortosa, estació d'autobusos"].includes(x.k));
+  const north=rest.some(x=>["t:L'Ampolla-El Perelló-Deltebre","b:Barri del Roquer","b:L'Ampolla"].includes(x.k));
+  if(S.dir==="s"&&south)return["t:Tortosa","b:Tortosa, estació d'autobusos","t:L'Aldea-Amposta-Tortosa"].map(k=>rest.find(x=>x.k===k)).find(Boolean);
+  if(S.dir==="n"&&north)return["t:Barcelona-Sants","t:Tarragona","b:El Perelló"].map(k=>rest.find(x=>x.k===k)).find(Boolean)||rest[rest.length-1];
+  return null}
+function plan(sv,o){let best=null;const keys=new Set(o.pl.map(p=>p.k));
+  sv.seq.forEach((x,i)=>{if(!keys.has(x.k))return;const to=target(sv,i,o);if(!to)return;const w=S.walk[x.k],p=o.pl.find(q=>q.k===x.k);
+    const leave=x.t-(w?w.min+S.margin:0);if(!best||leave>best.leave)best={leave,dep:x.t,stop:p,walk:w,to}});return best}
+const placeShort=k=>{const[m,n]=[k.slice(0,1),k.slice(2)];return m==="t"?(SHORT[n]||n):(BUS_PLACES[n]?.s||n)};
+const placeTown=k=>{const n=k.slice(2);return k[0]==="t"?(TOWN[n]||n):(BUS_PLACES[n]?.town||n)};
+const arrText=x=>"arriba a "+placeTown(x.p.to.k)+" a les "+fmt(x.p.to.t);
+
+function render(){const n=madrid(),now=n.hour*60+n.minute,today=new Date(Date.UTC(n.year,n.month-1,n.day)),o=origin();
+  const from=o.home?"Camarles":(o.near?o.near.town:"");
+  $("route").textContent=o.home?(S.dir==="s"?"Camarles → Tortosa":"Camarles → Barcelona · el Perelló"):from+" → Camarles";
+  $("swap").hidden=!o.home;
+  let fut=[];for(let a=0;a<4;a++)for(const sv of services(today,a)){const p=plan(sv,o);if(p)fut.push({...sv,p})}
+  fut.sort((a,b)=>a.p.dep-b.p.dep);
+  const i=fut.findIndex(x=>x.p.leave>=now),h=fut[i];
+  const walking=Object.keys(S.walk).length>0&&!o.far;
+  if(!h){$("heroLab").textContent="Sense dades";$("time").textContent="—";$("line").textContent="";$("arr").textContent="";$("go").textContent="No hi ha horaris disponibles";$("detail").textContent="";}
+  else{$("heroLab").textContent=walking?"Pròxim que pots agafar":"Pròxim transport";
+    $("time").textContent=fmt(h.p.dep);$("line").textContent=h.line;$("arr").textContent=(h.tag?h.tag+", ":"")+arrText(h);
+    if(walking&&h.p.walk){const wait=h.p.leave-now;$("go").textContent=wait<=0?"Surt ara":"Surt d'aquí a "+dur(wait)+", a les "+fmt(h.p.leave);
+      $("detail").textContent=dur(h.p.walk.min)+(h.p.walk.meth==="route"?"":" (aprox.)")+" a peu fins a "+h.p.stop.s+". Marge: "+S.margin+" min.";}
+    else{$("go").textContent="D'aquí a "+dur(h.p.dep-now);$("detail").textContent="Surt de "+h.p.stop.s+". No inclou el temps a peu."}}
+  const r=$("run");r.hidden=true;
+  if(walking&&i>0){const m=fut[i-1];if(m.p.dep>=now&&m.p.walk){const t=m.p.dep-now,run=Math.ceil(m.p.walk.min*.6);r.hidden=false;
+    r.textContent=run<=t?`Pots agafar el de les ${fmt(m.p.dep)} (${m.line}) si corres: surt d'aquí a ${dur(t)}.`:`Ja no arribes al de les ${fmt(m.p.dep)} (${m.line}).`}}
+  const nt=$("note"),msgs=[];const k=iso(today);
+  ALERTS.filter(a=>a.date===k&&a.text).forEach(a=>msgs.push(a.text));
+  if(TRAIN.base&&!TRAIN.trains.length)msgs.push("Ara no tenim l'horari dels trens. Només es mostren els autobusos.");
+  if(k>SCHOOL_END)msgs.push("Encara no tenim el calendari escolar d'aquest curs: l'horari de l'autobús pot variar.");
+  if(o.away&&!S.manual)msgs.push("Ets lluny de Camarles i de la línia: et mostrem els horaris des de Camarles.");
+  if(S.loc==="denied")msgs.push("La ubicació no està disponible. Tria on ets per veure el pròxim transport.");
+  if(S.loc==="error")msgs.push("No hem pogut saber on ets. Tria on ets o torna-ho a provar.");
+  nt.textContent=msgs.join(" ");nt.hidden=!msgs.length;
+  $("places").hidden=!(S.loc==="denied"||S.loc==="error"||S.manual||o.away);
+  const b=$("locate");b.textContent=S.loc==="loading"?"Localitzant…":"On sóc / Actualitza";b.disabled=S.loc==="loading";
+  const st=h?h.p.stop:o.pl[0];
+  if(st)$("maps").href="https://www.google.com/maps/dir/?api=1"+(S.pos?`&origin=${S.pos.lat},${S.pos.lng}`:"")+`&destination=${st.lat},${st.lng}&travelmode=walking`;
+  $("rail").hidden=!(h&&h.mode==="train")&&!ALERTS.some(x=>x.date===k);
+  $("list").innerHTML=fut.slice(Math.max(i,0),Math.max(i,0)+6).map((x,j)=>`<li${j===0?' class="cur"':""}><b>${fmt(x.p.dep)}</b><span class="stop">${x.p.stop.s}</span><span class="ln">${x.line}</span><span class="r">${x.tag?x.tag+", ":""}${arrText(x)}</span></li>`).join("");
+  const bd=busDay(today);$("dayt").textContent="Autobús avui: "+(bd==="esc"?"horari escolar":bd==="noesc"?"horari no escolar":"no circula");
+  $("margin").value=String(S.margin);
+  showTemp(o);loadTemp(o);
+}
+const tempCache={},tempTry={};
+function tempTown(o){const p=o.home?BUS_PLACES.Camarles:o.near;return p?{n:o.home?"Camarles":p.town,lat:+p.lat.toFixed(2),lng:+p.lng.toFixed(2)}:null}
+function showTemp(o){const t=tempTown(o),el=$("temp"),c=t&&tempCache[t.n];el.hidden=!c;if(c)el.textContent=t.n+" "+c.v+"°"}
+async function loadTemp(o){const t=tempTown(o);if(!t)return;const c=tempCache[t.n];if((c&&Date.now()-c.at<18e5)||Date.now()-(tempTry[t.n]||0)<3e5)return;tempTry[t.n]=Date.now();
+  try{const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${t.lat}&longitude=${t.lng}&current=temperature_2m&timezone=Europe%2FMadrid`);const j=await r.json();const v=j.current&&j.current.temperature_2m;if(typeof v==="number"){tempCache[t.n]={v:Math.round(v),at:Date.now()};showTemp(o)}}catch(e){}}
+async function walkTo(p,s){const m=dist(p,s),approx={min:Math.max(1,Math.ceil(m*1.3/80)),m,meth:"approx"};
+  if(m>FAR_M)return approx;
+  try{const c=new AbortController(),tm=setTimeout(()=>c.abort(),4000);
+    const r=await fetch(`https://routing.openstreetmap.de/routed-foot/route/v1/foot/${p.lng},${p.lat};${s.lng},${s.lat}?overview=false`,{signal:c.signal});clearTimeout(tm);
+    const j=await r.json();const sec=j.routes[0].duration;return{min:Math.max(1,Math.ceil(sec/60)),m,meth:"route"}}catch(e){return approx}}
+
+async function onPos(g){S.pos={lat:g.coords.latitude,lng:g.coords.longitude};S.manual=null;S.loc="ok";const o=origin();S.walk={};if(o.far||o.away){render();return}
+  const ws=await Promise.all(o.pl.map(p=>walkTo(S.pos,p)));S.walk={};o.pl.forEach((p,i)=>S.walk[p.k]=ws[i]);render()}
+function locate(){if(!navigator.geolocation){S.loc="denied";render();return}
+  S.loc="loading";render();
+  try{navigator.geolocation.getCurrentPosition(onPos,e=>{S.loc=e.code===1?"denied":"error";render()},{enableHighAccuracy:true,timeout:12000,maximumAge:30000})}catch(e){S.loc="denied";render()}}
+const openMode=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone?"app":"web";
+$("locate").onclick=locate;
+$("swap").onclick=()=>{S.dir=S.dir==="s"?"n":"s";store.set("dir",S.dir);render()};
+$("places").onclick=e=>{const p=e.target.dataset.p;if(p){S.manual=p;S.walk={};render()}};
+$("margin").onchange=e=>{S.margin=+e.target.value;store.set("margin",S.margin);render()};
+$("infoBtn").onclick=()=>{const i=$("info");i.hidden=!i.hidden;$("infoBtn").setAttribute("aria-expanded",String(!i.hidden));if(!i.hidden)i.scrollIntoView({behavior:"smooth",block:"start"})};
+const es=k=>{const[y,m,d]=k.split("-");return d+"/"+m+"/"+y};
+function showTrainInfo(){if(!TRAIN.updated)return;const[y,m,d]=TRAIN.base.split("-").map(Number),last=new Date(Date.UTC(y,m-1,d)+(TRAIN.days-1)*864e5);
+  $("updated").textContent="Trens actualitzats: "+es(TRAIN.updated);$("trainInfo").textContent=`Trens: Renfe, actualitzats el ${es(TRAIN.updated)}, amb horaris fins al ${es(iso(last))}.`}
+async function loadJSON(u){try{const r=await fetch(u,{cache:"no-cache"});if(r.ok)return await r.json()}catch(e){}return null}
+(async()=>{const t=await loadJSON("trains.json");if(t&&Array.isArray(t.trains)){TRAIN=t;showTrainInfo();render();if(S.pos)onPos({coords:{latitude:S.pos.lat,longitude:S.pos.lng}})}
+  const a=await loadJSON("alerts.json");if(a&&Array.isArray(a.alerts)){ALERTS=a.alerts;render()}})();
+render();setInterval(render,20000);locate();
+if("serviceWorker" in navigator){const had=!!navigator.serviceWorker.controller;let done=false;navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had&&!done){done=true;location.reload()}});navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{})}
+let installEvent=null;
+function setupInstall(){const box=$("install"),text=$("instT"),btn=$("instB"),ua=navigator.userAgent;
+  if(openMode==="app"||store.get("installHidden")){box.hidden=true;return}
+  const ios=/iphone|ipad|ipod/i.test(ua),android=/android/i.test(ua),chromeLike=/chrome|crios|samsungbrowser/i.test(ua)&&!/; wv\)/i.test(ua);
+  if(installEvent){text.textContent="Instal·la-la i obre-la amb un toc des de la pantalla d'inici.";btn.hidden=false;box.hidden=false}
+  else if(ios){text.textContent=/crios|fxios/i.test(ua)?"Obre-la a Safari, prem Comparteix i després «Afegeix a la pantalla d'inici».":"Prem Comparteix i després «Afegeix a la pantalla d'inici».";btn.hidden=true;box.hidden=false}
+  else if(android){text.textContent=chromeLike?"Prem els tres punts (⋮), a dalt a la dreta, i després «Instal·la l'aplicació».":"Obre-la a Chrome, prem els tres punts (⋮) i després «Instal·la l'aplicació».";btn.hidden=true;box.hidden=false}
+  else box.hidden=true}
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();installEvent=e;setupInstall()});
+window.addEventListener("appinstalled",()=>{store.set("installHidden","1");$("install").hidden=true});
+$("instB").onclick=async()=>{if(!installEvent)return;const ev=installEvent;installEvent=null;ev.prompt();try{const r=await ev.userChoice;if(r.outcome!=="accepted")setupInstall()}catch(e){}};
+$("instX").onclick=()=>{store.set("installHidden","1");$("install").hidden=true};
+setupInstall();
+
+</script>
+</body></html>
