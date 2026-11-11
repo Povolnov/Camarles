@@ -63,6 +63,13 @@ li .r{text-align:right;color:var(--muted);font-size:.9rem}
 .status label{display:flex;gap:6px;align-items:center}
 select{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px}
 .link{background:none;border:0;color:var(--accent);min-height:36px;padding:4px 0;text-decoration:underline}
+.brand{position:relative}
+.xmas{position:absolute;pointer-events:none}
+.hat{width:24px;left:-6px;top:4px;transform:rotate(-14deg)}
+.star{width:13px;left:80px;top:-6px;animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{50%{transform:scale(1.25) rotate(15deg);filter:drop-shadow(0 0 3px #ffc247)}}
+@media (prefers-reduced-motion:reduce){.star{animation:none}}
+html.noxmas .xmas,html.noxmas .xmas-t{display:none}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .dir{min-width:0;padding:10px 8px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 1.02rem/1.1 var(--display);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .dir.on{background:var(--board);border-color:var(--board);color:#ffc247;box-shadow:0 2px 6px rgba(0,0,0,.18)}
@@ -70,7 +77,7 @@ select{font:inherit;color:var(--fg);background:var(--surface);border:1px solid v
 </style>
 <main>
   <h1 class="sr" id="route"></h1>
-  <div class="route"><button class="dir" id="dirS" type="button" data-d="s"></button><div class="logo" role="img" aria-label="Camarles"></div><button class="dir" id="dirN" type="button" data-d="n"></button></div>
+  <div class="route"><button class="dir" id="dirS" type="button" data-d="s"></button><div class="brand"><div class="logo" role="img" aria-label="Camarles"></div><svg class="xmas hat" viewBox="0 0 40 30" aria-hidden="true"><path d="M5 23C9 12 17 3 29 4c4 0 7 3 7 8l-3 1c-1-3-3-4-6-4-6 1-10 7-13 15z" fill="#d62828"/><rect x="2" y="21" width="20" height="7" rx="3.5" fill="#fff" stroke="#e0e0e0"/><circle cx="34" cy="14" r="4.5" fill="#fff" stroke="#e0e0e0"/></svg><svg class="xmas star" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1l2.6 5.6 6.1.7-4.5 4.2 1.2 6L10 14.5 4.6 17.5l1.2-6L1.3 7.3l6.1-.7z" fill="#ffc247" stroke="#c98a00" stroke-width=".8"/></svg></div><button class="dir" id="dirN" type="button" data-d="n"></button></div>
   <section class="board" aria-live="polite">
     <div class="toprow"><div class="lab" id="heroLab"></div><div class="temp" id="temp" hidden></div></div>
     <div class="timerow"><div class="time" id="time"></div><div class="meta"><span class="chip" id="line"></span><span id="arr"></span></div></div>
@@ -91,7 +98,7 @@ select{font:inherit;color:var(--fg);background:var(--surface);border:1px solid v
   <ul id="list"></ul>
   <div class="status"><span id="dayt"></span>
     <label for="margin">Marge<select id="margin"><option value="0">0 min</option><option value="2">2 min</option><option value="5">5 min</option><option value="10">10 min</option></select></label></div>
-  <p class="gift"><strong>L'app de Camarles per anar a Tortosa i a Barcelona.</strong><br>Aquesta aplicació és un regal per als veïns de Camarles, de part de veïns de Camarles.</p>
+  <p class="gift"><strong>L'app de Camarles per anar a Tortosa i a Barcelona… i tornar! Des de qualsevol estació.</strong><br><span class="xmas-t">🎄 </span>Aquesta aplicació és un regal de Nadal per als veïns de Camarles, de part de veïns de Camarles.</p>
   <div class="foot"><span class="ver">v. 1.0</span><span class="ver upd" id="updated"></span><button class="info-btn" id="infoBtn" type="button" aria-expanded="false" aria-controls="info" aria-label="Informació">i</button></div>
   <section class="info" id="info" hidden>
     <h2>Com funciona</h2>
@@ -137,6 +144,7 @@ let TRAIN={updated:"",base:"",days:0,stations:{},trains:[]};
 const SHORT={"Barcelona-Sants":"Sants","Barcelona Estació de França":"Estació de França","Barcelona-Passeig de Gràcia":"Pg. de Gràcia","L'Aldea-Amposta-Tortosa":"L'Aldea","L'Ampolla-El Perelló-Deltebre":"L'Ampolla","Camarles-Deltebre":"Estació de Camarles","Ulldecona-Alcanar-La Sénia":"Ulldecona","Sant Vicenç de Calders":"St. Vicenç de Calders","L'Hospitalet de l'Infant":"L'Hospitalet"};
 const TOWN={"Barcelona-Sants":"Barcelona","Barcelona Estació de França":"Barcelona","Barcelona-Passeig de Gràcia":"Barcelona","L'Aldea-Amposta-Tortosa":"L'Aldea","L'Ampolla-El Perelló-Deltebre":"L'Ampolla","Camarles-Deltebre":"Camarles","Ulldecona-Alcanar-La Sénia":"Ulldecona","Altafulla-Tamarit":"Altafulla"};
 const CAM_ST="Camarles-Deltebre",FAR_M=3500,HOME_M=4000;
+{const n=new Date(),k=n.getMonth()*100+n.getDate();if(!(k>=1001||k<=6))document.documentElement.classList.add("noxmas")}
 const $=id=>document.getElementById(id);
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const S={dir:store.get("dir")==="n"?"n":"s",pos:null,loc:"idle",manual:null,walk:{},margin:+(store.get("margin")??2)};
