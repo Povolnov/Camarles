@@ -43,6 +43,7 @@ button,a.btn{font:inherit;cursor:pointer;border-radius:10px;min-height:48px;disp
 .note{background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:.92rem}
 .places{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .places button{background:var(--surface);color:var(--fg);border:1px solid var(--line);font-weight:500}
+.places button.on{background:var(--board);border-color:var(--board);color:#ffc247}
 h2{margin:6px 0 0;font:500 1.1rem/1.2 var(--display);letter-spacing:.02em}
 ul{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:12px}
 li{display:grid;grid-template-columns:3.4rem minmax(0,1fr) auto;gap:6px;align-items:baseline;padding:10px 14px;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
@@ -146,7 +147,7 @@ const TOWN={"Barcelona-Sants":"Barcelona","Barcelona Estació de França":"Barce
 const CAM_ST="Camarles-Deltebre",FAR_M=3500,HOME_M=4000;
 {const n=new Date(),k=n.getMonth()*100+n.getDate();if(!(k>=1001||k<=6))document.documentElement.classList.add("noxmas")}
 const $=id=>document.getElementById(id);
-const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const store={get(k){try{return localStorage.getItem("cam_"+k)}catch(e){return null}},set(k,v){try{localStorage.setItem("cam_"+k,v)}catch(e){}}};
 const S={dir:store.get("dir")==="n"?"n":"s",pos:null,loc:"idle",manual:null,walk:{},margin:+(store.get("margin")??2)};
 let ALERTS=[];
 
@@ -228,10 +229,11 @@ function render(){const n=madrid(),now=n.hour*60+n.minute,today=new Date(Date.UT
   if(TRAIN.base&&!TRAIN.trains.length)msgs.push("Ara no tenim l'horari dels trens. Només es mostren els autobusos.");
   if(k>SCHOOL_END)msgs.push("Encara no tenim el calendari escolar d'aquest curs: l'horari de l'autobús pot variar.");
   if(o.away&&!S.manual)msgs.push("Ets lluny de Camarles i de la línia: et mostrem els horaris des de Camarles.");
-  if(S.loc==="denied")msgs.push("La ubicació no està disponible. Tria on ets per veure el pròxim transport.");
-  if(S.loc==="error")msgs.push("No hem pogut saber on ets. Tria on ets o torna-ho a provar.");
+  if(S.loc==="denied"&&!S.manual)msgs.push("La ubicació està bloquejada. Per activar-la, toca la icona a l'esquerra de l'adreça → Permisos → Ubicació. O tria on ets:");
+  if(S.loc==="error"&&!S.manual)msgs.push("No hem pogut saber on ets. Comprova que la ubicació del mòbil està activada, o tria on ets:");
   nt.textContent=msgs.join(" ");nt.hidden=!msgs.length;
   $("places").hidden=!(S.loc==="denied"||S.loc==="error"||S.manual||o.away);
+  for(const b of $("places").querySelectorAll("button"))b.classList.toggle("on",b.dataset.p===S.manual);
   const b=$("locate");b.textContent=S.loc==="loading"?"Localitzant…":"On sóc / Actualitza";b.disabled=S.loc==="loading";
   const st=h?h.p.stop:o.pl[0];
   if(st)$("maps").href="https://www.google.com/maps/dir/?api=1"+(S.pos?`&origin=${S.pos.lat},${S.pos.lng}`:"")+`&destination=${st.lat},${st.lng}&travelmode=walking`;
@@ -256,11 +258,13 @@ async function onPos(g){S.pos={lat:g.coords.latitude,lng:g.coords.longitude};S.m
   const ws=await Promise.all(o.pl.map(p=>walkTo(S.pos,p)));S.walk={};o.pl.forEach((p,i)=>S.walk[p.k]=ws[i]);render()}
 function locate(){if(!navigator.geolocation){S.loc="denied";render();return}
   S.loc="loading";render();
-  try{navigator.geolocation.getCurrentPosition(onPos,e=>{S.loc=e.code===1?"denied":"error";render()},{enableHighAccuracy:true,timeout:12000,maximumAge:30000})}catch(e){S.loc="denied";render()}}
+  const fail=e=>{S.loc=e&&e.code===1?"denied":"error";render()};
+  try{navigator.geolocation.getCurrentPosition(onPos,e=>{if(e.code===1)return fail(e);
+    navigator.geolocation.getCurrentPosition(onPos,fail,{enableHighAccuracy:false,timeout:15000,maximumAge:600000})},{enableHighAccuracy:true,timeout:8000,maximumAge:60000})}catch(e){fail()}}
 const openMode=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone?"app":"web";
 $("locate").onclick=locate;
 for(const b of [$("dirS"),$("dirN")])b.onclick=()=>{S.dir=b.dataset.d;store.set("dir",S.dir);render()};
-$("places").onclick=e=>{const p=e.target.dataset.p;if(p){S.manual=p;S.walk={};render()}};
+$("places").onclick=e=>{const p=e.target.closest("button")?.dataset.p;if(p){S.manual=p;S.walk={};render();scrollTo({top:0,behavior:"smooth"})}};
 $("margin").onchange=e=>{S.margin=+e.target.value;store.set("margin",S.margin);render()};
 $("infoBtn").onclick=()=>{const i=$("info");i.hidden=!i.hidden;$("infoBtn").setAttribute("aria-expanded",String(!i.hidden));if(!i.hidden)i.scrollIntoView({behavior:"smooth",block:"start"})};
 const es=k=>{const[y,m,d]=k.split("-");return d+"/"+m+"/"+y};
