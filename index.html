@@ -10,9 +10,9 @@ body{background:var(--bg);color:var(--fg);font:400 1rem/1.45 var(--body);padding
 main{max-width:30rem;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 button,a.btn{font:inherit;cursor:pointer;border-radius:10px;min-height:48px;display:flex;align-items:center;justify-content:center;text-decoration:none;padding:8px 14px;text-align:center}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.route{display:flex;align-items:center;gap:8px}
+.route{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px}
 .route h1{flex:1;min-width:0;text-align:left;margin:0;font:600 clamp(1.05rem,5vw,1.4rem)/1.15 var(--display);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.logo{flex:none;height:30px;width:93px;background:var(--fg);-webkit-mask:url(logo.png) no-repeat left center/contain;mask:url(logo.png) no-repeat left center/contain}
+.logo{height:34px;width:106px;background:var(--fg);-webkit-mask:url(logo.png) no-repeat left center/contain;mask:url(logo.png) no-repeat left center/contain}
 .gift{margin:6px 0 0;font-weight:500;text-wrap:balance}
 .foot{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:.9rem}
 .ver{flex:none;white-space:nowrap;font-size:clamp(.72rem,3.5vw,.9rem)}
@@ -63,10 +63,14 @@ li .r{text-align:right;color:var(--muted);font-size:.9rem}
 .status label{display:flex;gap:6px;align-items:center}
 select{font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px}
 .link{background:none;border:0;color:var(--accent);min-height:36px;padding:4px 0;text-decoration:underline}
-.swap{font-size:1.35rem;min-width:46px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.dir{min-width:0;padding:10px 8px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 1.02rem/1.1 var(--display);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.dir.on{background:var(--board);border-color:var(--board);color:#ffc247;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.dir:disabled{cursor:default;opacity:1}
 </style>
 <main>
-  <div class="route"><div class="logo" role="img" aria-label="Camarles"></div><h1 id="route"></h1><button class="swap" id="swap" type="button" aria-label="Canvia la direcció" title="Canvia la direcció">⇄</button></div>
+  <h1 class="sr" id="route"></h1>
+  <div class="route"><button class="dir" id="dirS" type="button" data-d="s"></button><div class="logo" role="img" aria-label="Camarles"></div><button class="dir" id="dirN" type="button" data-d="n"></button></div>
   <section class="board" aria-live="polite">
     <div class="toprow"><div class="lab" id="heroLab"></div><div class="temp" id="temp" hidden></div></div>
     <div class="timerow"><div class="time" id="time"></div><div class="meta"><span class="chip" id="line"></span><span id="arr"></span></div></div>
@@ -192,8 +196,12 @@ const arrText=x=>"arriba a "+placeTown(x.p.to.k)+" a les "+fmt(x.p.to.t);
 
 function render(){const n=madrid(),now=n.hour*60+n.minute,today=new Date(Date.UTC(n.year,n.month-1,n.day)),o=origin();
   const from=o.home?"Camarles":(o.near?o.near.town:"");
-  $("route").textContent=o.home?(S.dir==="s"?"→ Tortosa":"→ Barcelona · Perelló"):from+" → Camarles";
-  $("swap").hidden=!o.home;
+  $("route").textContent=o.home?(S.dir==="s"?"Camarles → Tortosa":"Camarles → Barcelona · el Perelló"):from+" → Camarles";
+  const dS=$("dirS"),dN=$("dirN");
+  if(o.home){dS.textContent="← Tortosa";dN.textContent="Barcelona →";dS.disabled=dN.disabled=false;dS.style.visibility=dN.style.visibility="";
+    dS.classList.toggle("on",S.dir==="s");dN.classList.toggle("on",S.dir==="n");dS.setAttribute("aria-pressed",S.dir==="s");dN.setAttribute("aria-pressed",S.dir==="n")}
+  else{const east=o.near&&o.near.lng>0.672,a=east?dN:dS,b=east?dS:dN;a.textContent=east?"← "+from:from+" →";a.classList.add("on");a.disabled=true;a.style.visibility="";a.removeAttribute("aria-pressed");
+    b.classList.remove("on");b.style.visibility="hidden";b.disabled=true}
   let fut=[];for(let a=0;a<4;a++)for(const sv of services(today,a)){const p=plan(sv,o);if(p)fut.push({...sv,p})}
   fut.sort((a,b)=>a.p.dep-b.p.dep);
   const i=fut.findIndex(x=>x.p.leave>=now),h=fut[i];
@@ -243,7 +251,7 @@ function locate(){if(!navigator.geolocation){S.loc="denied";render();return}
   try{navigator.geolocation.getCurrentPosition(onPos,e=>{S.loc=e.code===1?"denied":"error";render()},{enableHighAccuracy:true,timeout:12000,maximumAge:30000})}catch(e){S.loc="denied";render()}}
 const openMode=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone?"app":"web";
 $("locate").onclick=locate;
-$("swap").onclick=()=>{S.dir=S.dir==="s"?"n":"s";store.set("dir",S.dir);render()};
+for(const b of [$("dirS"),$("dirN")])b.onclick=()=>{S.dir=b.dataset.d;store.set("dir",S.dir);render()};
 $("places").onclick=e=>{const p=e.target.dataset.p;if(p){S.manual=p;S.walk={};render()}};
 $("margin").onchange=e=>{S.margin=+e.target.value;store.set("margin",S.margin);render()};
 $("infoBtn").onclick=()=>{const i=$("info");i.hidden=!i.hidden;$("infoBtn").setAttribute("aria-expanded",String(!i.hidden));if(!i.hidden)i.scrollIntoView({behavior:"smooth",block:"start"})};
