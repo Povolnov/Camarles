@@ -75,6 +75,7 @@ html.noxmas .xmas,html.noxmas .xmas-t{display:none}
 .dir{min-width:0;padding:10px 8px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font:600 1.02rem/1.1 var(--display);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .dir.on{background:var(--board);border-color:var(--board);color:#ffc247;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 .dir:disabled{cursor:default;opacity:1}
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.duo>.btn{margin:0;padding-inline:8px;font-size:.92rem;line-height:1.2}.duo:not(:has(>a:not([hidden]))){display:none}.nw{white-space:nowrap;display:block}.duo>.btn{flex-direction:column;align-items:center;justify-content:center;text-align:center}
 </style>
 <main>
   <h1 class="sr" id="route"></h1>
@@ -89,8 +90,7 @@ html.noxmas .xmas,html.noxmas .xmas-t{display:none}
   <div class="note" id="note" hidden></div>
   <div class="places" id="places" hidden><button type="button" data-p="home">Sóc a Camarles</button><button type="button" data-p="Tortosa">Sóc a Tortosa</button><button type="button" data-p="Barcelona-Sants">Sóc a Barcelona</button><button type="button" data-p="Tarragona">Sóc a Tarragona</button></div>
   <div class="actions"><button class="primary" id="locate" type="button">On sóc / Actualitza</button><a class="btn ghost" id="maps" target="_blank" rel="noopener">Ruta a Google Maps</a></div>
-  <a class="btn ghost" id="rail" href="https://rodalies.gencat.cat/ca/inici/" target="_blank" rel="noopener" hidden>Comprova el retard del tren a Rodalies</a>
-  <a class="btn ghost" id="call" href="tel:+34900410041" hidden>Truca a Rodalies (gratuït): 900 41 00 41</a>
+  <div class="duo"><a class="btn ghost" id="rail" href="https://rodalies.gencat.cat/ca/inici/" target="_blank" rel="noopener" hidden>Retards a Rodalies</a><a class="btn ghost" id="call" href="tel:+34900410041" hidden>Truca gratis <span class="nw">900 41 00 41</span></a></div>
   <div class="install" id="install" hidden>
     <div class="inst-row"><strong>Tingues-la sempre a mà</strong><button class="inst-x" id="instX" type="button" aria-label="Tanca">×</button></div>
     <p id="instT"></p>
