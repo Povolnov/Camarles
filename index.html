@@ -113,7 +113,8 @@ html.noxmas .xmas,html.noxmas .xmas-t{display:none}
     <h2>Avís</h2>
     <p>Aplicació no oficial, sense vincle amb Renfe, Rodalies, Plana ni l'Ajuntament de Camarles. Comprova els horaris abans de viatjar.</p>
     <h2>Privacitat</h2>
-    <p>No guardem cap dada teva. La teva ubicació es fa servir al telèfon i s'envia a OpenStreetMap només per calcular el temps a peu.</p>
+    <p>Per comptar visites i usuaris guardem la data, l'adreça IP, el país, la ciutat aproximada, un identificador anònim creat al teu telèfon, el tipus de dispositiu (Android, iPhone o ordinador) i si l'obres com a aplicació o al navegador, durant 90 dies. Per consultar-los o esborrar-los, escriu a andres@idaa.uk.</p>
+    <p>La teva ubicació no es guarda. Es fa servir al telèfon i s'envia a OpenStreetMap només per calcular el temps a peu.</p>
     <p>La temperatura es consulta a Open-Meteo amb les coordenades del municipi, no amb les teves.</p>
     <h2>Crèdits</h2>
     <p>Horaris de tren: <a href="https://data.renfe.com/" target="_blank" rel="noopener">Renfe Data</a>, CC BY 4.0.<br>Temperatura: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>, CC BY 4.0.</p>
@@ -262,6 +263,8 @@ function locate(){if(!navigator.geolocation){S.loc="denied";render();return}
   try{navigator.geolocation.getCurrentPosition(onPos,e=>{if(e.code===1)return fail(e);
     navigator.geolocation.getCurrentPosition(onPos,fail,{enableHighAccuracy:false,timeout:15000,maximumAge:600000})},{enableHighAccuracy:true,timeout:8000,maximumAge:60000})}catch(e){fail()}}
 const openMode=(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)||navigator.standalone?"app":"web";
+const LOG_URL="https://autobus-visits.povolnov.workers.dev/";function deviceId(){let id=store.get("device");if(!id&&crypto.randomUUID){id=crypto.randomUUID();store.set("device",id)}return id||""}
+if(LOG_URL)fetch(LOG_URL+"?app=camarles&mode="+openMode,{method:"POST",mode:"cors",keepalive:true,headers:{"Content-Type":"text/plain"},body:deviceId()}).catch(()=>{});
 $("locate").onclick=locate;
 for(const b of [$("dirS"),$("dirN")])b.onclick=()=>{S.dir=b.dataset.d;store.set("dir",S.dir);render()};
 $("places").onclick=e=>{const p=e.target.closest("button")?.dataset.p;if(p){S.manual=p;S.walk={};render();scrollTo({top:0,behavior:"smooth"})}};
