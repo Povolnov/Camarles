@@ -208,7 +208,7 @@ function render(){const n=madrid(),now=n.hour*60+n.minute,today=new Date(Date.UT
   const from=o.home?"Camarles":(o.near?o.near.town:"");
   $("route").textContent=o.home?(S.dir==="s"?"Camarles → Tortosa":"Camarles → Barcelona · el Perelló"):from+" → Camarles";
   const dS=$("dirS"),dN=$("dirN");
-  if(o.home){dS.textContent="← Tortosa";dN.textContent="Barcelona →";dS.disabled=dN.disabled=false;dS.style.visibility=dN.style.visibility="";
+  if(o.home){dS.textContent="Tortosa ←";dN.textContent="→ Barcelona";dS.disabled=dN.disabled=false;dS.style.visibility=dN.style.visibility="";
     dS.classList.toggle("on",S.dir==="s");dN.classList.toggle("on",S.dir==="n");dS.setAttribute("aria-pressed",S.dir==="s");dN.setAttribute("aria-pressed",S.dir==="n")}
   else{const east=o.near&&o.near.lng>0.672,a=east?dN:dS,b=east?dS:dN;a.textContent=east?"← "+from:from+" →";a.classList.add("on");a.disabled=true;a.style.visibility="";a.removeAttribute("aria-pressed");
     b.classList.remove("on");b.style.visibility="hidden";b.disabled=true}
