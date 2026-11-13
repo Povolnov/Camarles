@@ -88,7 +88,7 @@ html.noxmas .xmas,html.noxmas .xmas-t{display:none}
     <div class="run" id="run" hidden></div>
   </section>
   <div class="note" id="note" hidden></div>
-  <div class="places" id="places" hidden><button type="button" data-p="home">Sóc a Camarles</button><button type="button" data-p="Tortosa">Sóc a Tortosa</button><button type="button" data-p="Barcelona-Sants">Sóc a Barcelona</button><button type="button" data-p="Tarragona">Sóc a Tarragona</button></div>
+  <div class="places" id="places" hidden><button type="button" data-p="home">Sóc a Camarles</button><button type="button" data-p="Tortosa">Sóc a Tortosa</button><button type="button" data-p="Barcelona">Sóc a Barcelona</button><button type="button" data-p="Tarragona">Sóc a Tarragona</button></div>
   <div class="actions"><button class="primary" id="locate" type="button">On sóc / Actualitza</button><a class="btn ghost" id="maps" target="_blank" rel="noopener">Ruta a Google Maps</a></div>
   <div class="duo"><a class="btn ghost" id="rail" href="https://rodalies.gencat.cat/ca/inici/" target="_blank" rel="noopener" hidden>Retards a Rodalies</a><a class="btn ghost" id="call" href="tel:+34900410041" hidden>Truca gratis <span class="nw">900 41 00 41</span></a></div>
   <div class="install" id="install" hidden>
@@ -175,7 +175,7 @@ function places(){const out=[];
 const homePlaces=()=>places().filter(p=>p.home);
 function origin(){
   if(S.manual){const all=places();if(S.manual==="home")return{home:true,pl:homePlaces()};
-    const p=all.find(x=>x.name===S.manual);return{home:false,pl:p?[p]:[],near:p}}
+    const pl=all.filter(x=>x.town===S.manual);return{home:false,pl,near:pl[0]}}
   if(!S.pos)return{home:true,pl:homePlaces()};
   const all=places().map(p=>({...p,d:dist(S.pos,p)})).sort((a,b)=>a.d-b.d);
   if(all.filter(p=>p.home).some(p=>p.d<=HOME_M))return{home:true,pl:homePlaces()};
