@@ -132,14 +132,16 @@ const BUS_PLACES={
  "Barri del Roquer":{s:"Barri del Roquer",town:"L'Ampolla",lat:40.786969,lng:0.682712},
  "Camarles":{s:"Parada de Camarles",town:"Camarles",lat:40.772257,lng:0.670041,home:1},
  "L'Aldea":{s:"L'Aldea",town:"L'Aldea",lat:40.7499247,lng:0.6161478},
+ "URV Tortosa":{s:"URV Tortosa",town:"Tortosa",lat:40.81967,lng:0.523129},
+ "Ferreries":{s:"Ferreries (Tortosa)",town:"Tortosa",lat:40.8146,lng:0.5169},
  "Mercat de Tortosa":{s:"Mercat de Tortosa",town:"Tortosa",lat:40.81098,lng:0.520233},
  "Tortosa, estació d'autobusos":{s:"Tortosa, estació d'autobusos",town:"Tortosa",lat:40.8056638,lng:0.5217989}};
 const ORDER_S=["L'Ametlla de Mar","El Perelló","L'Ampolla","Barri del Roquer","Camarles","L'Aldea","Mercat de Tortosa","Tortosa, estació d'autobusos"];
-const ORDER_N=["Mercat de Tortosa","Tortosa, estació d'autobusos","L'Aldea","Camarles","Barri del Roquer","L'Ampolla","El Perelló","L'Ametlla de Mar"];
+const ORDER_N=["URV Tortosa","Ferreries","Mercat de Tortosa","Tortosa, estació d'autobusos","L'Aldea","Camarles","Barri del Roquer","L'Ampolla","El Perelló","L'Ametlla de Mar"];
 const BUS={esc:{s:[["6:10","6:40","6:55",null,"7:05","7:20","7:45","8:05"],["8:30","8:45","9:00",null,"9:10","9:20","9:40","10:00"],["10:00","10:15","10:30","10:40","10:45","11:05",null,"11:25"],["12:30","12:45","13:00",null,"13:10","13:20","13:40","14:00"],["17:30","17:45","18:00",null,"18:10","18:20","18:40","18:55"]],
- n:[[null,"10:30","10:50","11:10","11:15","11:25","11:40","11:55"],[null,"11:30","11:50","12:10","12:15","12:25","12:40","12:55"],["15:40","15:45","16:05","16:25","16:30","16:40","16:55","17:10"],["18:40","18:55","19:20","19:30",null,"19:40","19:55","20:10"]]},
+ n:[[null,null,null,"10:30","10:50","11:10","11:15","11:25","11:40","11:55"],[null,null,null,"11:30","11:50","12:10","12:15","12:25","12:40","12:55"],["15:30","15:35","15:40","15:45","16:05","16:25","16:30","16:40","16:55","17:10"],["18:45","18:50","18:40","18:55","19:20","19:30",null,"19:40","19:55","20:10"]]},
  noesc:{s:[["6:10","6:25","6:40","6:50","6:55","7:15",null,"7:40"],["8:10","8:25","8:40","8:50","8:55","9:05",null,"9:25"],["10:00","10:15","10:30","10:40","10:45","11:05",null,"11:25"],["11:30","11:45","12:00","12:10","12:15","12:25",null,"12:45"],["14:25","14:40","14:55","15:05","15:10","15:30",null,"15:50"],["17:00","17:15","17:30","17:40","17:45","17:55",null,"18:15"],["18:15","18:30","18:45","18:55","19:00","19:20",null,"19:40"]],
- n:[[null,"8:30","8:50","9:10","9:15","9:25","9:40","9:55"],[null,"10:00","10:20","10:30","10:35","10:45","11:00","11:15"],[null,"11:45","12:05","12:15","12:20","12:30","12:45","13:00"],[null,"13:05","13:25","13:45","13:50","14:00","14:15","14:30"],[null,"16:05","16:25","16:45","16:50","17:00","17:15","17:30"],[null,"18:45","19:05","19:25","19:30","19:40","19:55","20:10"],[null,"20:10","20:30","20:50","20:55","21:05","21:20","21:35"]]}};
+ n:[[null,null,null,"8:30","8:50","9:10","9:15","9:25","9:40","9:55"],[null,null,null,"10:00","10:20","10:30","10:35","10:45","11:00","11:15"],[null,null,null,"11:45","12:05","12:15","12:20","12:30","12:45","13:00"],[null,null,null,"13:05","13:25","13:45","13:50","14:00","14:15","14:30"],[null,null,null,"16:05","16:25","16:45","16:50","17:00","17:15","17:30"],[null,null,null,"18:45","19:05","19:25","19:30","19:40","19:55","20:10"],[null,null,null,"20:10","20:30","20:50","20:55","21:05","21:20","21:35"]]}};
 // Calendari escolar de Catalunya (Departament d'Educació): curs 2026-27 i 2027-28.
 const SCHOOL=[["2026-09-08","2027-06-21",[["2026-12-22","2027-01-07"],["2027-03-20","2027-03-29"]]],["2027-09-08","2028-06-22",[["2027-12-22","2028-01-09"],["2028-04-08","2028-04-17"]]]];
 const SCHOOL_END="2028-06-22";
@@ -189,7 +191,7 @@ function services(today,add){const d=new Date(today.getTime()+add*864e5),out=[],
   if(TRAIN.base){const[y,m,dd]=TRAIN.base.split("-").map(Number),i=Math.round((d.getTime()-Date.UTC(y,m-1,dd))/864e5);
     if(i>=0)for(const t of TRAIN.trains)if(t.m[i]==="1")out.push({mode:"train",line:"R16 "+t.n,tag,seq:t.s.map(([st,h])=>({k:"t:"+st,name:st,t:toMin(h)+base}))})}
   const p=busDay(d);
-  if(p)for(const[dir,order]of[["s",ORDER_S],["n",ORDER_N]])for(const col of BUS[p][dir])out.push({mode:"bus",line:"Bus 80",tag,seq:col.map((h,i)=>h&&{k:"b:"+order[i],name:order[i],t:toMin(h)+base}).filter(Boolean)});
+  if(p)for(const[dir,order]of[["s",ORDER_S],["n",ORDER_N]])for(const col of BUS[p][dir])out.push({mode:"bus",line:"Bus 80",tag,seq:col.map((h,i)=>h&&{k:"b:"+order[i],name:order[i],t:toMin(h)+base}).filter(Boolean).sort((a,b)=>a.t-b.t)});
   return out}
 // Where a trip ends for the reader: Camarles when coming home, else the main stop in the chosen direction.
 function target(sv,from,o){const rest=sv.seq.slice(from+1);
